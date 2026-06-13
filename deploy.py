@@ -10,7 +10,6 @@ if not w3.is_connected():
     exit()
 
 print("Connesso a Ganache!")
-# Usiamo il primo account finto di Ganache per pagare il "gas" del deployment
 w3.eth.default_account = w3.eth.accounts[0] 
 
 # 2. Compilazione dello Smart Contract
@@ -31,7 +30,6 @@ compiled_sol = solcx.compile_standard({
 bytecode = compiled_sol['contracts']['UrnaElettorale.sol']['UrnaElettorale']['evm']['bytecode']['object']
 abi = compiled_sol['contracts']['UrnaElettorale.sol']['UrnaElettorale']['abi']
 
-# Salviamo l'ABI in un file JSON. Ci servirà per far comunicare il Client Python con la Blockchain!
 with open("contracts/abi.json", "w") as file:
     json.dump(abi, file)
 print("Interfaccia ABI salvata in contracts/abi.json")
@@ -41,7 +39,6 @@ print("Deployment sulla blockchain in corso...")
 Urna = w3.eth.contract(abi=abi, bytecode=bytecode)
 tx_hash = Urna.constructor().transact()
 
-# Aspettiamo che il blocco venga "minato" da Ganache
 tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 
 print("\nSMART CONTRACT DEPLOYATO CON SUCCESSO!")

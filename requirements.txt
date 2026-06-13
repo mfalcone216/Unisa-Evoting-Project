@@ -1,0 +1,6 @@
+flask
+authlib
+requests
+web3
+py-solc-x
+cryptography

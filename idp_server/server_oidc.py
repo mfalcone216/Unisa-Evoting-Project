@@ -15,7 +15,10 @@ print("\n[IdP STARTUP] Chiavi RSA a 2048 bit generate per l'Identity Provider d'
 
 # Database fittizio degli studenti autorizzati (Matricola -> Secret TOTP)
 DB_STUDENTI = {
-    "MAT_001": b"SEGRETO_MFA_MARIO_2026"
+    "MAT_001": b"SEGRETO_MFA_MARIO_2026",
+    "MAT_002": b"SEGRETO_MFA_LUIGI_2026",
+    "MAT_003": b"SEGRETO_MFA_GIULIA_2026",
+    "MAT_004": b"SEGRETO_MFA_ELENA_2026"
 }
 STUDENTI_CHE_HANNO_GIA_RITIRATO_IL_TOKEN = set()
 
@@ -31,7 +34,7 @@ def rilascia_token_oidc():
 
     print(f"\n[IdP SERVER] Ricevuta richiesta di login da: {matricola}")
 
-    # 1. Verifica Identità e MFA (Lab 07)
+    # 1. Verifica Identità e MFA
     if matricola not in DB_STUDENTI:
         return jsonify({"error": "invalid_client"}), 401
     
@@ -50,23 +53,21 @@ def rilascia_token_oidc():
     t_id = f"TID_{secrets.token_hex(4)}"
     exp_time = int(time.time()) + 3600
 
-    # 4. Firma PSS del Token (Lab 02)
+    # 4. Firma PSS del Token
     msg_da_firmare = f"{t_id}||{exp_time}"
     firma_s = CryptoUtils.rsa_sign_pss(sk_idp, msg_da_firmare)
 
     print(f"[IdP SERVER] Identità verificata. Rilascio Token Anonimo {t_id}.")
     print(f"[IdP SERVER] Applicazione Policy Zero-Logging: Elimino T_ID dai log.")
 
-    # Restituiamo il payload (simulando una risposta OIDC standard)
     return jsonify({
         "access_token": firma_s,
         "token_type": "Bearer",
         "expires_in": 3600,
         "id_token": t_id,
-        "pk_idp_pem": CryptoUtils.export_public_key(pk_idp) # Esportiamo la chiave pubblica dell'IdP per permettere la verifica
+        "pk_idp_pem": CryptoUtils.export_public_key(pk_idp)
     })
 
 if __name__ == '__main__':
-    # Avvio del server in locale (su porta 5000), specificando i certificati creati con OpenSSL!
     print("[IdP STARTUP] Avvio server OIDC d'Ateneo in HTTPS...")
     app.run(port=5000, ssl_context=('certs/server.crt', 'certs/server.key'))

@@ -13,11 +13,11 @@ MATRICOLA = "MAT_001"
 SEGRETO_TOTP = b"SEGRETO_MFA_MARIO_2026"
 IDP_URL = "https://127.0.0.1:5000/oauth/token"
 
-# Generazione Chiave Effimera Studente (Lab 02)
+# Generazione Chiave Effimera Studente 
 sk_studente, pk_studente = CryptoUtils.generate_rsa_keypair()
 pk_studente_pem = CryptoUtils.export_public_key(pk_studente)
 
-# Generazione Chiave Commissione (In uno scenario reale verrebbe scaricata dalla bacheca)
+# Generazione Chiave Commissione
 _, pk_comm = CryptoUtils.generate_rsa_keypair()
 
 print("\n>>> FASE 2: RICHIESTA TOKEN ALL'IdP (OIDC)")
@@ -25,7 +25,7 @@ print("\n>>> FASE 2: RICHIESTA TOKEN ALL'IdP (OIDC)")
 totp_code = CryptoUtils.generate_totp(SEGRETO_TOTP)
 print(f"[{MATRICOLA}] Invio credenziali e TOTP ({totp_code}) all'IdP...")
 
-# Facciamo la richiesta HTTPS al server IdP (ignoriamo verify=False solo per via del cert auto-firmato locale)
+# Richiesta HTTPS al server IdP
 try:
     response = requests.post(IDP_URL, json={"client_id": MATRICOLA, "totp_code": totp_code}, verify=False)
     response.raise_for_status()
@@ -41,7 +41,7 @@ except requests.exceptions.RequestException as e:
 print("\n>>> FASE 3: ESPRESSIONE DEL VOTO E CIFRATURA")
 preferenze = '["Lista_Onesta", "Lista_Onesta"]'
 
-# Cifratura stocastica OAEP (Lab 02)
+# Cifratura stocastica OAEP
 c_cifrato = CryptoUtils.rsa_encrypt_oaep(pk_comm, preferenze)
 t_vote = int(time.time())
 seq_voto = 1
@@ -60,7 +60,6 @@ w3.eth.default_account = w3.eth.accounts[0]
 with open("../contracts/abi.json", "r") as f:
     abi = json.load(f)
 
-# INSERISCI QUI L'INDIRIZZO DEL TUO CONTRATTO (Quello ottenuto con deploy.py!)
 CONTRACT_ADDRESS = "0x22A8cd2Db0D29fFcA5457F8ab337EfBAd341cd7A" 
 urna_contract = w3.eth.contract(address=CONTRACT_ADDRESS, abi=abi)
 

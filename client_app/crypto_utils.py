@@ -7,7 +7,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
 
 class CryptoUtils:
-    # --- FUNZIONI TOTP (Lab 01/07) ---
     @staticmethod
     def generate_totp(secret_key: bytes, interval_x: int = 30) -> str:
         current_time = int(time.time())
@@ -22,7 +21,6 @@ class CryptoUtils:
         totp = binary % 10**6
         return f"{totp:06d}"
 
-    # --- FUNZIONI RSA (Lab 02) ---
     @staticmethod
     def generate_rsa_keypair():
         private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)

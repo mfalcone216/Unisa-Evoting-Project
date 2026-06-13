@@ -9,7 +9,7 @@ print(" SIMULAZIONE E-VOTING: BLOCKCHAIN, WEB3 E CRITTOGRAFIA RSA")
 print("================================================================")
 
 # 1. SETUP WEB3 E SMART CONTRACT
-CONTRACT_ADDRESS = "0x22A8cd2Db0D29fFcA5457F8ab337EfBAd341cd7A"  # Il tuo indirizzo!
+CONTRACT_ADDRESS = "0x22A8cd2Db0D29fFcA5457F8ab337EfBAd341cd7A" 
 w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
 w3.eth.default_account = w3.eth.accounts[0] # Usiamo il primo account Ganache per pagare il Gas
 
@@ -24,7 +24,7 @@ print("\nGenerazione chiavi RSA a 2048 bit in corso...")
 sk_idp, pk_idp = CryptoUtils.generate_rsa_keypair()
 sk_comm, pk_comm = CryptoUtils.generate_rsa_keypair()
 sk_studente, pk_studente = CryptoUtils.generate_rsa_keypair()
-print("✅ Chiavi PKI d'Ateneo e Studente generate con successo.")
+print("Chiavi PKI d'Ateneo e Studente generate con successo.")
 
 # ---------------------------------------------------------
 # FASE 2: AUTENTICAZIONE IdP (Simulazione OpenID Connect)
