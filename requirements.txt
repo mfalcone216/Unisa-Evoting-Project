@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 flask
 authlib
 requests
 web3
 py-solc-x
+=======
+flask
+authlib
+requests
+web3
+py-solc-x
+>>>>>>> 36aba1de39acc45dfae019d69b0e6242ca28b77f
 cryptography
