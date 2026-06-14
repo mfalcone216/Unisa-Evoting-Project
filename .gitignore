@@ -4,3 +4,4 @@ __pycache__/
 idp_server/certs/server.key
 idp_server/certs/server.crt
 contract_address.txt
+contracts/abi.json
