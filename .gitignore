@@ -3,3 +3,4 @@ __pycache__/
 .ipynb_checkpoints/
 idp_server/certs/server.key
 idp_server/certs/server.crt
+contract_address.txt

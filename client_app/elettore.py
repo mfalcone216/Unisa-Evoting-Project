@@ -1,14 +1,18 @@
 import json
 import time
 import requests
+import urllib3
 from web3 import Web3
 from crypto_utils import CryptoUtils
+
+# Disabilita gli avvisi di sicurezza per i certificati autofirmati (ambiente locale)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 print("================================================================")
 print(" CABINA ELETTORALE DIGITALE DELLO STUDENTE")
 print("================================================================")
 
-# 1. SETUP STUDENTE
+# SETUP STUDENTE
 MATRICOLA = "MAT_001"
 SEGRETO_TOTP = b"SEGRETO_MFA_MARIO_2026"
 IDP_URL = "https://127.0.0.1:5000/oauth/token"
@@ -35,7 +39,7 @@ try:
     firma_idp_s = token_data["access_token"]
     print(f"[{MATRICOLA}] Token ottenuto con successo. Entro in cabina elettorale anonima.")
 except requests.exceptions.RequestException as e:
-    print(f"Errore di connessione all'IdP. Assicurati che server_oidc.py sia in esecuzione!")
+    print("Errore di connessione all'IdP. Assicurati che server_oidc.py sia in esecuzione!")
     exit()
 
 print("\n>>> FASE 3: ESPRESSIONE DEL VOTO E CIFRATURA")
@@ -60,16 +64,23 @@ w3.eth.default_account = w3.eth.accounts[0]
 with open("../contracts/abi.json", "r") as f:
     abi = json.load(f)
 
-CONTRACT_ADDRESS = "0x22A8cd2Db0D29fFcA5457F8ab337EfBAd341cd7A" 
+try:
+    with open("../contract_address.txt", "r") as f:
+        CONTRACT_ADDRESS = f.read().strip()
+except FileNotFoundError:
+    print("ERRORE: Impossibile trovare 'contract_address.txt'.")
+    print("Assicurati di aver eseguito 'deploy.py' prima di avviare l'elettore!")
+    exit()
+
 urna_contract = w3.eth.contract(address=CONTRACT_ADDRESS, abi=abi)
 
-print(f"[{MATRICOLA}] Invio transazione Web3 all'Urna Distribuita...")
+print(f"[{MATRICOLA}] Invio transazione Web3 all'Urna Distribuita ({CONTRACT_ADDRESS})...")
 try:
     tx_hash = urna_contract.functions.sottomettiVoto(
         t_id, c_cifrato, sigma_studente, t_vote, seq_voto, pk_studente_pem
     ).transact()
     
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-    print(f"[{MATRICOLA}]  RICEVUTA: Voto registrato nel blocco N° {receipt.blockNumber}!")
+    print(f"[{MATRICOLA}] RICEVUTA: Voto registrato nel blocco N° {receipt.blockNumber}!")
 except Exception as e:
     print(f" Transazione fallita: {e}")

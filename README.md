@@ -24,8 +24,8 @@ Il sistema è progettato per mitigare attivamente:
 - **Coercizione**: Tramite sovrascrittura protetta (`seq` monotono).
 - **Insider Threat**: Tramite Threshold Secret Sharing (WP2).
 
-## Configurazione SSL (Obbligatoria)
-Per abilitare il protocollo HTTPS nel server IdP, generare i certificati nella cartella root:
+### Configurazione SSL (Obbligatoria)
+Per abilitare il protocollo HTTPS nel server IdP, generare i certificati locali all'interno della cartella dell'Identity Provider. Dalla cartella principale del progetto, eseguire:
 ```bash
-mkdir certs
-openssl req -x509 -newkey rsa:4096 -nodes -out certs/server.crt -keyout certs/server.key -days 365 -subj "/C=IT/ST=Campania/L=Salerno/O=Universita/OU=Cybersecurity/CN=localhost"
+mkdir -p idp_server/certs
+MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:4096 -nodes -out idp_server/certs/server.crt -keyout idp_server/certs/server.key -days 365 -subj "/C=IT/ST=Campania/L=Salerno/O=Universita/OU=Cybersecurity/CN=localhost"

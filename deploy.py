@@ -3,7 +3,7 @@ import os
 from web3 import Web3
 import solcx
 
-# 1. Connessione a Ganache (Controlla che la porta sia quella giusta, 7545 o 8545)
+# 1. Connessione a Ganache (Controllare che la porta sia quella giusta, 7545 o 8545)
 w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
 if not w3.is_connected():
     print("ERRORE: Impossibile connettersi a Ganache. Controlla che sia aperto e la porta sia corretta.")
@@ -41,8 +41,11 @@ tx_hash = Urna.constructor().transact()
 
 tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 
+with open("contract_address.txt", "w") as f:
+    f.write(tx_receipt.contractAddress)
+
 print("\nSMART CONTRACT DEPLOYATO CON SUCCESSO!")
 print("="*60)
 print(f"INDIRIZZO DEL CONTRATTO: {tx_receipt.contractAddress}")
 print("="*60)
-print("Salva questo indirizzo, ci servirà nello step successivo!")
+print("L'indirizzo è stato salvato automaticamente in 'contract_address.txt'!")
