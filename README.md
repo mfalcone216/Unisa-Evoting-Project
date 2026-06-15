@@ -33,8 +33,8 @@ Il sistema implementa un protocollo di E-Voting decentralizzato basato su:
 
 ## Sicurezza
 Il sistema è progettato per mitigare attivamente:
-- **Replay Attacks**: Tramite controllo di sequenza (`seq`).
-- **Coercizione**: Tramite sovrascrittura protetta (`seq` monotono).
+- **Replay Attacks**: Tramite controllo di sequenza.
+- **Coercizione**: Tramite sovrascrittura protetta.
 - **Insider Threat**: Tramite Threshold Secret Sharing (WP2).
 
 ### Configurazione SSL
