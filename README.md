@@ -22,10 +22,12 @@ Il sistema implementa un protocollo di E-Voting decentralizzato basato su:
 3. Avvia il server dell'Identity Provider d'Ateneo (terminale 1):
 ```bash
    python idp_server/server_oidc.py
+```
 
 4. Avvia la Cabina Elettorale Web (terminale 2):
 ```bash
    python client_app/elettore_web.py    
+```
 
 5. Apri il browser e collegati a http://localhost:8080 per utilizzare il simulatore di voto istituzionale.
 
@@ -40,5 +42,6 @@ Per abilitare il protocollo HTTPS nel server IdP, generare i certificati locali 
 ```bash
 mkdir -p idp_server/certs
 MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:4096 -nodes -out idp_server/certs/server.crt -keyout idp_server/certs/server.key -days 365 -subj "/C=IT/ST=Campania/L=Salerno/O=Universita/OU=Cybersecurity/CN=localhost"
+```
 
 
