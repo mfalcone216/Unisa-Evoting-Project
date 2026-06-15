@@ -1,7 +1,31 @@
+# Cache e compilati Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Ambienti Virtuali (Aggiunta fondamentale)
+venv/
+.venv/
+env/
+
+# Notebook e IDE
 .ipynb_checkpoints/
+.vscode/
+.idea/
+
+# File di sistema OS (Mac/Windows)
+.DS_Store
+Thumbs.db
+
+# Sicurezza e Certificati Locali
 idp_server/certs/server.key
 idp_server/certs/server.crt
+
+# File generati dinamicamente da Ganache/Solidity
 contract_address.txt
 contracts/abi.json
+
+# File di log (opzionale ma consigliato)
+*.log

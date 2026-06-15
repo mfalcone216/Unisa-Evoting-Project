@@ -1,5 +1,4 @@
-flask
-authlib
+Flask
 requests
 web3
 py-solc-x
