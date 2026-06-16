@@ -1,8 +1,16 @@
 async function aggiornaSmartphone() {
+
+    const matricolaInput = document.getElementById('matricola');
+    const matricola = matricolaInput ? matricolaInput.value : 'MAT_001';
+
     try {
-        const response = await fetch('/api/totp');
+        const response = await fetch(`/api/totp?matricola=${matricola}`);
         if (response.ok) {
             const data = await response.json();
+            
+            const userDiv = document.querySelector('.phone-user');
+            if (userDiv) userDiv.innerText = matricola;
+            
             document.getElementById('phone-totp').innerText = data.totp;
             document.getElementById('phone-time').innerText = data.expires_in;
         }
@@ -10,6 +18,7 @@ async function aggiornaSmartphone() {
         document.getElementById('phone-totp').innerText = "ERROR";
     }
 }
+
 // Aggiorna lo schermo del telefono ogni secondo
 setInterval(aggiornaSmartphone, 1000);
 aggiornaSmartphone();
@@ -38,7 +47,8 @@ async function effettuaLogin() {
             // Nascondiamo il finto smartphone una volta loggati
             document.getElementById('smartphone').style.display = 'none';
         } else {
-            errorDiv.innerText = "Errore: " + data.message;
+            const errMsg = data.message || data.error_description || data.error || 'Errore sconosciuto';
+            errorDiv.innerText = "Errore: " + errMsg;
         }
     } catch (error) {
         errorDiv.innerText = "Server disconnesso.";
@@ -49,13 +59,12 @@ async function effettuaLogin() {
 }
 
 async function sottomettiVoto() {
-    // Raccogliamo il Vettore delle Scelte dai 4 menù a tendina
+    // Raccogliamo il Vettore delle Scelte dai 4 menu a tendina
     const voto_sa = document.getElementById('voto_sa').value;
     const voto_cda = document.getElementById('voto_cda').value;
     const voto_cdd = document.getElementById('voto_cdd').value;
     const voto_adisurc = document.getElementById('voto_adisurc').value;
 
-    // Creiamo l'array JSON formattato come stringa (Payload Crittografico)
     const vettorePreferenze = JSON.stringify([voto_sa, voto_cda, voto_cdd, voto_adisurc]);
 
     const errorDiv = document.getElementById('vote-error');

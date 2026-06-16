@@ -37,22 +37,27 @@ def login():
     try:
         # Contattiamo il server OIDC dell'Ateneo
         response = requests.post(IDP_URL, json={"client_id": matricola, "totp_code": totp_code}, verify=False)
-        
+
         if response.status_code == 200:
             token_data = response.json()
-            
+
             # Salviamo i token anonimi nella "sessione"
             SESSIONE_CLIENT["t_id"] = token_data["id_token"]
             SESSIONE_CLIENT["firma_idp_s"] = token_data["access_token"]
-            
+
             # Generiamo le chiavi effimere RSA dello studente per questa sessione di voto
             sk_studente, pk_studente = CryptoUtils.generate_rsa_keypair()
             SESSIONE_CLIENT["sk_studente"] = sk_studente
             SESSIONE_CLIENT["pk_studente"] = pk_studente
-            
+
             return jsonify({"status": "success", "message": "Autenticazione OIDC riuscita. Identità verificata."})
         else:
-            return jsonify({"status": "error", "message": "Credenziali o codice TOTP errati o Token già emesso."}), response.status_code
+            # Inoltriamo la descrizione d'errore fornita dall'IdP (es. tempo di attesa rimanente)
+            try:
+                err = response.json().get('error_description') or response.json().get('error') or response.text
+            except Exception:
+                err = "Errore durante l'autenticazione OIDC."
+            return jsonify({"status": "error", "message": err}), response.status_code
             
     except requests.exceptions.RequestException:
         return jsonify({"status": "error", "message": "Impossibile connettersi all'IdP d'Ateneo. Assicurati che server_oidc.py sia in esecuzione."}), 500
@@ -75,7 +80,6 @@ def esegui_voto():
     try:
         # --- 1. CRITTOGRAFIA (OAEP e PSS) ---
         # Per la simulazione generiamo al volo la chiave pubblica della commissione
-        # (Nel mondo reale, questa chiave è pubblica, fissa e distribuita a priori)
         _, pk_comm = CryptoUtils.generate_rsa_keypair()
         
         # Cifratura stocastica OAEP del payload del voto
@@ -128,17 +132,15 @@ def esegui_voto():
 
 @app.route('/api/totp', methods=['GET'])
 def get_totp_demo():
-    """API dedicata SOLO alla demo visiva: simula l'app Authenticator dello studente"""
-    import time
-    # Usiamo il segreto hardcoded della matricola MAT_001 per la demo
-    segreto_mfa = b"SEGRETO_MFA_MARIO_2026"
-    codice = CryptoUtils.generate_totp(segreto_mfa)
-    secondi_rimanenti = 30 - (int(time.time()) % 30)
-    
-    return jsonify({
-        "totp": codice,
-        "expires_in": secondi_rimanenti
-    })
+    """Inoltra la richiesta all'IdP per ottenere il codice demo (senza conoscere i segreti)"""
+    matricola = request.args.get('matricola', 'MAT_001')
+    try:
+        # Chiediamo all'IdP il codice generato per questa matricola
+        url = f"https://127.0.0.1:5000/api/demo_totp?matricola={matricola}"
+        response = requests.get(url, verify=False)
+        return jsonify(response.json())
+    except requests.exceptions.RequestException:
+        return jsonify({"totp": "------", "expires_in": 0})
 
 if __name__ == '__main__':
     print("================================================================")
